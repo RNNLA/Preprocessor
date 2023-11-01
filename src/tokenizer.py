@@ -18,7 +18,7 @@ class BaseTokenizer(metaclass = ABCMeta) :
     def tokenize(self,
                  debug : bool,
                  remove_stopwords : bool,
-                 tokenize_option : int) -> Union[List[str], pd.DataFrame] :
+                 tokenize_option : int) -> Union[List[List[str]], pd.DataFrame] :
         pass
 
     def get_complete_data(self) -> pd.DataFrame :
@@ -30,7 +30,7 @@ class BaseTokenizer(metaclass = ABCMeta) :
         data = self.__padding(data)
         return data
 
-    def get_tokenized_col(self) -> List[str]  :
+    def get_tokenized_col(self) -> List[List[str]]  :
         return self.tokenized_col
 
     def set_target_col_name(self, target_col_name : str) :
@@ -53,7 +53,7 @@ class KomoranTokenizer(BaseTokenizer):
 
     def tokenize(self,
                  debug : bool = False,
-                 remove_stopwords : bool = False) -> Union[List[str], pd.DataFrame] :
+                 remove_stopwords : bool = False) -> Union[List[List[str]], pd.DataFrame] :
         self.tokenized_col = []
         desc = 'Tokenizing' + (' & Removing Stopwords' if remove_stopwords else '')
         self.__tokenize_each(debug, remove_stopwords, desc)
@@ -70,12 +70,12 @@ class KomoranTokenizer(BaseTokenizer):
                        desc : str) :
         for row in tqdm(self.target_data[self.target_col_name], desc=desc) :
             tokenized_sentences = [elem for elem, pos in row]
-            self.still_tagged_sentences = [elem for elem in row] if debug else [] # refactor!
+            self.still_tagged_sentences = [elem for elem in row] if debug else [] # need to refactor!
             if remove_stopwords :
               tokenized_sentences = self.__remove_words(tokenized_sentences, debug)
             self.tokenized_col.append(tokenized_sentences)
             if debug :
-              self.still_pos_list.append(self.still_tagged_sentences) #refactor!
+              self.still_pos_list.append(self.still_tagged_sentences) #need to refactor!
 
     def __remove_words(self,
                         tokenized_sentences : List[str],
@@ -84,5 +84,5 @@ class KomoranTokenizer(BaseTokenizer):
         tokenized_sentences.replace('!', '.')
         result = [word for word in tokenized_sentences if (word not in self.stoplist and (len(word) > 1 or word == '.') ) ]
         if debug :
-          self.still_tagged_sentences = [(word, pos) for word, pos in self.still_tagged_sentences if word in result] #refactor!
+          self.still_tagged_sentences = [(word, pos) for word, pos in self.still_tagged_sentences if word in result] #need to refactor!
         return result

@@ -3,14 +3,13 @@ from utils import CSVLoader
 
 from tqdm import tqdm
 from typing import List
-from typing import Tuple
 
 class POSTagger:
   def __init__(self,
                data_path : str,
                target_column : str,
-               removed_list : List[Tuple[str]]):
-    self.data = CSVLoader.load_csv(data_path, self)
+               removed_list : List[str]):
+    self.data = CSVLoader.load_csv(data_path)
     self.target_column = target_column
     self.removed_list = removed_list
     self.tagged_data = None
@@ -30,7 +29,7 @@ class POSTagger:
   def save_csv(self,
                save_path : str) -> None :
       if self.tagged_data is not None :
-        CSVLoader.save_csv(save_path, self.tagged_data, self)
+        CSVLoader.save_csv(save_path, self.tagged_data)
       else:
         print('No data')
 
